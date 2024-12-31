@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BillSmart - Login & Register</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-container">
+            <h1>Login to BillSmart</h1>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" placeholder="Email" required />
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password/OTP" required />
+                </div>
+                <button class="small-btn" type="button">Get OTP</button>
+                <button type="submit">Login</button>
+            </form>
+            <p class="message">
+                Not registered? <a onclick="toggleForm()">Create an account</a>
+            </p>
+        </div>
+
+        <div class="register-container">
+            <h1>Create Account</h1>
+            <form id="registerForm">
+                <div class="input-group">
+                    <input type="text" placeholder="Username" required />
+                </div>
+                <div class="input-group">
+                    <input type="email" placeholder="Email" required />
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password" required />
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Confirm password" required />
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <p class="message">
+                <a href="forgot-password.html">Forgot Password?</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        function toggleForm() {
+            const loginContainer = document.querySelector(".login-container");
+            const registerContainer = document.querySelector(".register-container");
+            if (loginContainer.style.display === "none") {
+                loginContainer.style.display = "block";
+                registerContainer.style.display = "none";
+            } else {
+                loginContainer.style.display = "none";
+                registerContainer.style.display = "block";
+            }
+        }
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
+                alert("Login successful!");
+            });
+        document
+            .getElementById("registerForm")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
+                alert("Registration successful!");
+            });
+    </script>
+</body>
+
+</html>
