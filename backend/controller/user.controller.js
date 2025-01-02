@@ -74,10 +74,12 @@ export const login = asyncHandler(async (req, res, next) => {
     const sql = "UPDATE users SET refreshToken=? WHERE id=?;"
     await pool.execute(sql, [refreshToken, existedUser.id]);
 
+    console.log("res sent")
+
     return res
         .cookie("accessToken",accessToken,cookieOptions)
         .cookie("refreshToken",refreshToken,cookieOptions)
-        .status(200).send("u are logged in");
+        .status(200).send(new apiResponse(200,{accessToken,refreshToken},"logged in succesfully"));
 
 
 })

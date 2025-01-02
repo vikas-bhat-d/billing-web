@@ -35,9 +35,11 @@ app.get('/',async (req,res)=>{
 
 import { otpRouter} from "./routes/otp.route.js"
 import { userRouter } from "./routes/user.route.js"
+import { partyRouter } from "./routes/party.route.js"
 
 app.use('/verify',otpRouter)
 app.use('/user',userRouter)
+app.use('/party',partyRouter);
 
 app.listen(process.env.PORT,()=>{
     console.log("Listening on port 3000")
