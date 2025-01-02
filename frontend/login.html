@@ -14,13 +14,13 @@
             <h1>Login to BillSmart</h1>
             <form id="loginForm">
                 <div class="input-group">
-                    <input type="text" placeholder="Email" required />
+                    <input type="text" class="email" id="email" placeholder="Email" required />
                 </div>
                 <div class="input-group">
-                    <input type="password" placeholder="Password/OTP" required />
+                    <input type="password" class="password" placeholder="Password/OTP" required />
                 </div>
-                <button class="small-btn" type="button">Get OTP</button>
-                <button type="submit">Login</button>
+                <button class="small-btn" type="button" id="otpButton" onclick="sendOTP()">Get OTP</button>
+                <button type="submit" id="login-button" onclick="loginUser()">Login</button>
             </form>
             <p class="message">
                 Not registered? <a onclick="toggleForm()">Create an account</a>
@@ -53,6 +53,8 @@
         </div>
     </div>
     <script>
+        const server = "http://localhost:3000"
+        let byOTP = false;
         function toggleForm() {
             const loginContainer = document.querySelector(".login-container");
             const registerContainer = document.querySelector(".register-container");
@@ -64,11 +66,89 @@
                 registerContainer.style.display = "block";
             }
         }
+
+        function sendOTP() {
+            const email = document.getElementById("email").value;
+            const otpButton = document.getElementById("otpButton");
+
+            if (!byOTP) {
+                byOTP = true;
+                otpButton.innerHTML = `<span class="loader"></span> Sending OTP...`;
+                otpButton.disabled = true;
+
+                fetch(`${server}/verify/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('OTP sent successfully!');
+                        } else {
+                            byOTP = false;
+                            alert('Failed to send OTP. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        byOTP = false;
+                        console.error('Error:', error);
+                        alert('Error occurred while sending OTP.');
+                    })
+                    .finally(() => {
+                        otpButton.innerHTML = "Get OTP";
+                        otpButton.disabled = false;
+                    });
+            }
+        }
         document
             .getElementById("loginForm")
             .addEventListener("submit", function (event) {
                 event.preventDefault();
-                alert("Login successful!");
+                const email = document.getElementById("email").value;
+                const pass = document.querySelector(".password").value;
+
+                const data = {
+                    email: email,
+                    byOTP: byOTP,
+                    pass: pass
+                };
+
+                const loginButton = document.querySelector(".small-btn");
+
+                loginButton.innerHTML = `<span class="loader"></span> Logging in...`;
+                loginButton.disabled = true;
+
+                fetch(`${server}/user/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    credentials: 'include',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Login successful!');
+                            console.log('Access Token:', data.data.accessToken);
+                            console.log('Refresh Token:', data.data.refreshToken);
+                        } else {
+                            alert('Login failed: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during login.');
+                    })
+                    .finally(() => {
+                        loginButton.innerHTML = "Login";
+                        loginButton.disabled = false;
+                    });
             });
         document
             .getElementById("registerForm")
@@ -78,5 +158,4 @@
             });
     </script>
 </body>
-
 </html>
