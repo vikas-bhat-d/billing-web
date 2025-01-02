@@ -3,8 +3,14 @@ import cors from "cors"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 import pool from "./database/db.js"
-import { userRouter } from "./routes/otp.route.js"
-dotenv.config()
+import { generateAndSendOTP } from "./utils/mail.js"
+
+dotenv.config(
+    {
+        path:"./.env"
+    }
+)
+
 
 
 const app=express()
@@ -17,15 +23,21 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use(express.static('./public'));
+app.use(cookieParser())
 
 app.use('/',(err,req,res,next)=>{
     res.send(`error occured: ${err?.message}`);
 })
-app.get('/',(req,res)=>{
-    res.send("lisetning..")
+app.get('/',async (req,res)=>{
+    res.send("listeningg...")
 })
 
-app.use('/verify',userRouter)
+
+import { otpRouter} from "./routes/otp.route.js"
+import { userRouter } from "./routes/user.route.js"
+
+app.use('/verify',otpRouter)
+app.use('/user',userRouter)
 
 app.listen(process.env.PORT,()=>{
     console.log("Listening on port 3000")

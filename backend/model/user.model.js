@@ -1,14 +1,16 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import pool from "../database/db.js"
+
 class User{
-    constructor({id,username,email,password,refreshToken,created,otp}){
-        this.id=id
-        this.username=username,
-        this.email=email,
-        this.password=password,
-        this.refreshToken=refreshToken,
-        this.otp=otp;
+    constructor({id,username,email,password,refreshToken,created,otp,GSTIN}){
+        if(id) this.id=id
+        this.username=username;
+        this.email=email;
+        if(password)this.password=password;
+        if(refreshToken) this.refreshToken=refreshToken;
+        if(otp)this.otp=otp;
+        if(GSTIN)this.GSTIN=GSTIN;
     }
 
 
@@ -25,8 +27,18 @@ class User{
     }
 
     static async findById(id){
-        const sql="SELECT * FROM users WHERE id=?;"
+        const sql="SELECT id,username,email,created,GSTIN FROM users WHERE id=?;"
         const [result]=await pool.execute(sql,[id]);
+        if(result.length==0)
+            return {}
+        return new User(result[0]);
+    }
+
+    static async findByEmail(email){
+        const sql="SELECT * FROM users WHERE email=?;"
+        const [result]=await pool.execute(sql,[email]);
+        if(result.length==0)
+            return {}
         return new User(result[0]);
     }
 
@@ -36,6 +48,15 @@ class User{
         return result;
     }
 
+    static async isVerified(email){
+        const sql = "SELECT * FROM otp_tokens WHERE email = ? AND is_used=1";
+        const [rows]=await pool.execute(sql,[email])
+        if(rows.length==0) return false
+        const deleteOTP="DELETE FROM otp_tokens WHERE email=?"
+        await pool.execute(deleteOTP,[email])
+        return true
+    }
+
     async generateAccessToken(){
         return  jwt.sign(
             {
@@ -43,7 +64,7 @@ class User{
                 username:this.username,
                 email:this.email
             },
-            process.env.ACCESS_TOKEN_SECRECT,
+            process.env.ACCESS_TOKEN_SECRET,
             {
                 expiresIn:'24h'
             }
@@ -56,7 +77,7 @@ class User{
                 id:this.id,
                 username:this.username,
             },
-            process.env.REFRESH_TOKEN_SECRECT,
+            process.env.REFRESH_TOKEN_SECRET,
             {
                 expiresIn:'10d'
             }
