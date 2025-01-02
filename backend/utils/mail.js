@@ -10,30 +10,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// const mailOptions = {
-//     from: process.env.SMTP_USER,
-//     to: "vikasdbhat@gmail.com",
-//     subject: "Test Email",
-//     text: "nothing otp is 12345",
-// };
-// const result = await transporter.sendMail(mailOptions)
-// console.log(result)
-
-export const generateAndSendOTP=async(recipientEmail)=>{
-    const otp=Math.floor(100000 + Math.random() * 900000);
+export const generateAndSendOTP = async (recipientEmail) => {
+    const otp = Math.floor(100000 + Math.random() * 900000);
     try {
-        const mailOptions={
-            from:process.env.SMTP_USER,
-            to:recipientEmail,
-            subject:"Verification OTP",
-            text:`here is the otp to verify yourself- ${otp}`
+        const mailOptions = {
+            from: process.env.SMTP_USER,
+            to: recipientEmail,
+            subject: "Verification OTP",
+            text: `here is the otp to verify yourself- ${otp}`
         }
-    
-        const result=await transporter.sendMail(mailOptions)
-        return {otp,result};
-    } catch (error) {
-        return {otp,result:null}
-    }
-    // console.log(result);
-}
 
+        const result = await transporter.sendMail(mailOptions)
+        return { otp, result };
+    } catch (error) {
+        return { otp, result: null }
+    }
+
+}

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { initializeVerification, verifyOTP } from "../controller/otp.controller.js";
 
-export const userRouter=Router();
+export const otpRouter=Router();
 
-userRouter.route('/send').post(initializeVerification);
-userRouter.route("/").post(verifyOTP)
+otpRouter.route('/send').post(initializeVerification);
+otpRouter.route("/").post(verifyOTP)
